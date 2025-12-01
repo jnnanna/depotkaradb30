@@ -1,0 +1,17 @@
+# MQTT TCP
+listener 1883
+protocol mqtt
+
+# MQTT WebSockets
+listener 9001
+protocol websockets
+
+# Désactiver l'anonymous
+allow_anonymous false
+
+# Fichier de mot de passe
+password_file C:\Program Files\mosquitto\passwd.txt
+
+# Persistence (facultatif)
+persistence true
+persistence_location C:\Program Files\mosquitto\

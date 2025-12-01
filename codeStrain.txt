@@ -1,0 +1,109 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.Random;
+
+public class Panneau extends JPanel {
+    // Propriétés de l'oval
+    private int x = 50;  
+    private int y = 50;  
+    private final int diametre = 50;  // Diamètre de l'oval
+
+    private int directionX = 1;  // Direction du déplacement horizontal
+    private int directionY = 1;  // Direction du déplacement vertical
+
+    private Color couleurOval;  // La couleur actuelle de l'oval
+
+    public Panneau() {
+        // Initialiser la couleur de l'oval à une couleur aléatoire
+        this.couleurOval = generateRandomColor();
+
+        // Paramètres de la fenêtre
+        setPreferredSize(new Dimension(500, 500));  // Taille du panneau
+    }
+
+    // Méthode pour générer une couleur aléatoire
+    private Color generateRandomColor() {
+        Random rand = new Random();
+        return new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+    }
+
+    // Méthode pour dessiner l'oval
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);  // Appeler la méthode paintComponent du parent pour gérer l'affichage de base
+        g.setColor(couleurOval);  // Appliquer la couleur de l'oval
+        g.fillOval(x, y, diametre, diametre);  // Dessiner l'oval
+    }
+
+    // Méthode pour animer l'oval
+    public void animer() {
+        // Utilisation d'un thread pour gérer la boucle d'animation
+        Thread animationThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Boucle infinie pour déplacer l'oval
+                while (true) {
+                    // Déplacer l'oval
+                    x += directionX;  // Déplacement horizontal
+                    y += directionY;  // Déplacement vertical
+
+                    // Gestion du rebond horizontal
+                    if (x + diametre > getWidth() || x < 0) {
+                        directionX = -directionX;  // Inverser la direction horizontale
+                        couleurOval = generateRandomColor();  // Changer la couleur de l'oval
+                    }
+
+                    // Gestion du rebond vertical
+                    if (y + diametre > getHeight() || y < 0) {
+                        directionY = -directionY;  // Inverser la direction verticale
+                        couleurOval = generateRandomColor();  // Changer la couleur de l'oval
+                    }
+
+                    // Redessiner le panneau (mise à jour)
+                    repaint();
+
+                    // Pause pour une animation fluide
+                    try {
+                        Thread.sleep(20);  // Pause de 20 ms
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        animationThread.start();  // Démarrer le thread d'animation
+    }
+}
+
+
+
+import javax.swing.*;
+
+public class FenetreAvecOval extends JFrame {
+
+    public FenetreAvecOval() {
+        // Configuration de la fenêtre
+        setTitle("Fenetre avec un Oval");
+        setSize(500, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);  // Centrer la fenêtre
+
+        // Créer une instance de Panneau et l'ajouter à la fenêtre
+        Panneau panneau = new Panneau();
+        add(panneau);
+
+        // Lancer l'animation de l'oval
+        panneau.animer();
+    }
+
+    public static void main(String[] args) {
+        // Créer et afficher la fenêtre
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                FenetreAvecOval fenetre = new FenetreAvecOval();
+                fenetre.setVisible(true);
+            }
+        });
+    }
+}
